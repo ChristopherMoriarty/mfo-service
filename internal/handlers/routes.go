@@ -6,6 +6,7 @@ import (
 
 	chi "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type (
@@ -33,5 +34,6 @@ func NewHandlers(
 
 func (h *handlers) build(r chi.Router) {
 	r.Use(middleware.Recoverer)
-	r.Get("/cold-users/{phone}", h.getUserByPhone)
+	r.Get("/docs/*", httpSwagger.WrapHandler)
+	r.Get("/cold-users/{phone}", h.GetUserByPhone)
 }
