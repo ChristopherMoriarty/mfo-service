@@ -7,6 +7,8 @@ import (
 	chi "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
+
+	_ "mfo-service/docs" // swagger docs
 )
 
 type (

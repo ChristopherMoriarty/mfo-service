@@ -1,0 +1,59 @@
+basePath: /
+definitions:
+  domain.ColdUsers:
+    properties:
+      credits:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      phone:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API for working with cold users
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: MFO Service API
+  version: "1.0"
+paths:
+  /cold-users/{phone}:
+    get:
+      consumes:
+      - application/json
+      description: Get information about a cold user by phone number
+      parameters:
+      - description: User phone number
+        in: path
+        name: phone
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information
+          schema:
+            $ref: '#/definitions/domain.ColdUsers'
+        "400":
+          description: Invalid phone number
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get user by phone number
+      tags:
+      - cold-users
+schemes:
+- http
+swagger: "2.0"

@@ -6,27 +6,41 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"mfo-service/internal/apperrs"
 )
 
+// GetUserByPhone godoc
+// @Summary Get user by phone number
+// @Description Get information about a cold user by phone number
+// @Tags cold-users
+// @Accept json
+// @Produce json
+// @Param phone path int true "User phone number"
+// @Success 200 {object} domain.ColdUsers "User information"
+// @Failure 400 {string} string "Invalid phone number"
+// @Failure 500 {string} string "Internal server error"
+// @Router /cold-users/{phone} [get]
 func (h *handlers) GetUserByPhone(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	phoneStr := chi.URLParam(r, "phone")
 
 	phone, err := strconv.Atoi(phoneStr)
 	if err != nil {
-		h.l.Errorf("Invalid phone number: %s, error: %v", phoneStr, err)
-		http.Error(w, "Invalid phone number", http.StatusBadRequest)
+		h.handleError(ctx, w, apperrs.ErrConditionViolation)
 		return
 	}
 
-	user, err := h.coldUsers.GetColdUsers(r.Context(), phone)
+	user, err := h.coldUsers.GetColdUsers(ctx, phone)
 	if err != nil {
-		h.l.Errorf("Failed to get user: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		h.handleError(ctx, w, err)
 		return
 	}
 
-	h.l.Infof("Successfully found user with phone: %d", phone)
+	h.l.With("phone", phone).Info("Successfully found user")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(user)
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		h.handleError(ctx, w, err)
+	}
 }
+
